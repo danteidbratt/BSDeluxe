@@ -17,7 +17,6 @@ public class GUI extends JFrame{
     
     int fieldSize;
     int playerNumber;
-    
 
     public void setWindowBasics(int fieldSize, int playerNumber) {
         this.playerNumber = playerNumber;

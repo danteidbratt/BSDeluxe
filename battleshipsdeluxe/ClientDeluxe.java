@@ -22,7 +22,7 @@ public class ClientDeluxe extends JFrame{
         playerNumber = s.getPlayerNumber();
     }
     
-    public void program() throws IOException, ClassNotFoundException, InterruptedException{
+    public void orderSelector() throws IOException, ClassNotFoundException, InterruptedException{
         if (playerNumber == 1) {
             Player1 p1 = new Player1(playerNumber, s, in, out);
             while(true){
@@ -40,7 +40,7 @@ public class ClientDeluxe extends JFrame{
     public static void main(String[] args){
         try{
             ClientDeluxe c = new ClientDeluxe();
-            c.program();
+            c.orderSelector();
         } catch (IOException | ClassNotFoundException | InterruptedException e) {
             System.out.println(e.getMessage());
         }

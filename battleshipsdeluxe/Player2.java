@@ -6,7 +6,6 @@ import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.Socket;
 import javax.swing.JLabel;
 
 public class Player2{
