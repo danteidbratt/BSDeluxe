@@ -14,19 +14,16 @@ public class ServerDeluxe {
         ObjectOutputStream out1 = new ObjectOutputStream(clientSocket1.getOutputStream());
         ObjectInputStream in1 = new ObjectInputStream(clientSocket1.getInputStream());
         
-        out1.writeObject(s);
-        s = (SessionDeluxe)in1.readObject();
         
         Socket clientSocket2 = serverSocket.accept();
         ObjectOutputStream out2 = new ObjectOutputStream(clientSocket2.getOutputStream());
         ObjectInputStream in2 = new ObjectInputStream(clientSocket2.getInputStream());
         
-        
         while(true){
-            out2.writeObject(s);
-            s = (SessionDeluxe)in2.readObject();
             out1.writeObject(s);
             s = (SessionDeluxe)in1.readObject();
+            out2.writeObject(s);
+            s = (SessionDeluxe)in2.readObject();
         }
     }
     

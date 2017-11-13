@@ -29,12 +29,13 @@ public class Player2{
         this.out = out;
         this.s = s;
         gui.setWindowBasics(5, playerNumber);
-        shipsPlaced = 0;
-        shipsHit = 0;
-        ammo = 10;
+        gui.cancelButton.addMouseListener(ma);
     }
     
     public void fuckingGoTime() throws IOException, ClassNotFoundException {
+        shipsPlaced = 0;
+        shipsHit = 0;
+        ammo = 10;
         addListenersToAll();
         gui.infoLabel1.setText("Place your ships");
         s = (SessionDeluxe)in.readObject();
@@ -49,7 +50,7 @@ public class Player2{
     public void addListenersToAll(){
         for (JLabel[] square : gui.squares) {
             for (JLabel square1 : square) {
-                square1.addMouseListener(p2Listener);
+                square1.addMouseListener(ma);
             }
         }
     }
@@ -57,40 +58,74 @@ public class Player2{
     public void removeListenersFromAll(){
         for (JLabel[] square : gui.squares) {
             for (JLabel square1 : square) {
-                square1.removeMouseListener(p2Listener);
+                square1.removeMouseListener(ma);
             }
         }
     }
     
-    MouseAdapter p2Listener = new MouseAdapter(){
+    MouseAdapter ma = new MouseAdapter(){
         @Override
         public void mouseClicked(MouseEvent e) {
-            for (int i = 0; i < gui.squares.length; i++) {
-                for (int j = 0; j < gui.squares[i].length; j++) {
-                    if(e.getSource() == gui.squares[i][j]){
-                        if(gui.squares[i][j].getBackground() == Color.BLACK){
-                            gui.squares[i][j].setBackground(Color.GREEN);
-                            s.setShipCoordinates(j, i);
-                            shipsPlaced++;
-                            if(shipsPlaced > 4){
-                                try {
-                                    out.writeObject(s);
-                                } catch (IOException ex) {
-                                    System.out.println(ex.getMessage());
+            if (e.getSource() != gui.cancelButton) {
+                for (int i = 0; i < gui.squares.length; i++) {
+                    for (int j = 0; j < gui.squares[i].length; j++) {
+                        if(e.getSource() == gui.squares[i][j]){
+                            if(gui.squares[i][j].getBackground() == Color.BLACK){
+                                gui.squares[i][j].setBackground(Color.GREEN);
+                                s.setShipCoordinates(j, i);
+                                shipsPlaced++;
+                                if(shipsPlaced > 4){
+                                    try {
+                                        out.writeObject(s);
+                                    } catch (IOException ex) {
+                                        System.out.println(ex.getMessage());
+                                    }
+                                    gui.infoLabel1.setText("");
+                                    gui.infoLabel2.setText("Shots remaining: " + ammo);
+                                    removeListenersFromAll();
                                 }
-                                gui.infoLabel1.setText("");
-                                gui.infoLabel2.setText("Incoming");
-                                removeListenersFromAll();
-                            }
-                        } 
+                            } 
+                        }
                     }
                 }
             }
         }
+
+        @Override
+        public void mouseEntered(MouseEvent e) {
+            if (e.getSource() == gui.cancelButton){
+                gui.cancelButton.setBackground(Color.GREEN);
+                gui.cancelButton.setForeground(Color.BLACK);
+            }
+        }
+
+        @Override
+        public void mouseExited(MouseEvent e) {
+            if (e.getSource() == gui.cancelButton){
+                gui.cancelButton.setBackground(Color.BLACK);
+                gui.cancelButton.setForeground(Color.GREEN);
+            }
+        }
+        
+        @Override
+        public void mousePressed(MouseEvent e) {
+            if (e.getSource() == gui.cancelButton){
+                gui.cancelButton.setBackground(Color.BLACK);
+                gui.cancelButton.setForeground(Color.GREEN);
+            }
+        }
+            
+        @Override
+        public void mouseReleased(MouseEvent e) {
+            if (e.getSource() == gui.cancelButton){
+                System.exit(0);
+            }
+        }
+        
     };
     
     public void bombReceived(int x, int y) throws IOException{
-        ammo--;
+        gui.infoLabel2.setText("Shots remaining: " + --ammo);
         if (gui.squares[y][x].getBackground() == Color.GREEN){
             gui.squares[y][x].setBackground(Color.RED);
             shipsHit++;

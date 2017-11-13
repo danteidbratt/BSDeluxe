@@ -14,6 +14,8 @@ public class GUI extends JFrame{
     JLabel infoLabel1 = new JLabel("");
     JLabel infoLabel2 = new JLabel("");
     JLabel infoLabel3 = new JLabel("");
+    JPanel topPanel = new JPanel();
+    JLabel cancelButton = new JLabel("Exit Game");
     
     int fieldSize;
     int playerNumber;
@@ -46,6 +48,14 @@ public class GUI extends JFrame{
         infoPane.add(infoLabel1);
         infoPane.add(infoLabel2);
         infoPane.add(infoLabel3);
+        cancelButton.setBackground(Color.BLACK);
+        cancelButton.setOpaque(true);
+        cancelButton.setForeground(Color.GREEN);
+        cancelButton.setPreferredSize(new Dimension(40, 30));
+        cancelButton.setHorizontalAlignment(SwingConstants.CENTER);
+        topPanel.setLayout(new BorderLayout());
+        topPanel.add(cancelButton, BorderLayout.CENTER);
+        add(topPanel, BorderLayout.NORTH);
         add(field, BorderLayout.CENTER);
         add(infoPane, BorderLayout.SOUTH);
         setBackground(Color.BLACK);

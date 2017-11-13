@@ -3,9 +3,8 @@ package battleshipsdeluxe;
 
 import java.io.*;
 import java.net.Socket;
-import javax.swing.*;
 
-public class ClientDeluxe extends JFrame{
+public class ClientDeluxe{
     
     ObjectOutputStream out;
     ObjectInputStream in;

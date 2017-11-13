@@ -32,12 +32,13 @@ public class Player1 implements Runnable{
         this.out = out;
         this.s = s;
         gui.setWindowBasics(5, playerNumber);
-        shipsPlaced = 0;
-        shipsHit = 0;
-        ammo = 10;
+        gui.cancelButton.addMouseListener(ma);
     }
     
     public void fuckingGoTime() throws IOException, ClassNotFoundException{
+        shipsPlaced = 0;
+        shipsHit = 0;
+        ammo = 10;
         out.writeObject(s);
         s.resetAll();
         activity2 = new Thread(this);
@@ -60,7 +61,7 @@ public class Player1 implements Runnable{
     public void addListenersToAll(){
         for (JLabel[] square : gui.squares) {
             for (JLabel square1 : square) {
-                square1.addMouseListener(p1Listener);
+                square1.addMouseListener(ma);
             }
         }
     }
@@ -68,30 +69,32 @@ public class Player1 implements Runnable{
     public void removeListenersFromAll(){
         for (JLabel[] square : gui.squares) {
             for (JLabel square1 : square) {
-                square1.removeMouseListener(p1Listener);
+                square1.removeMouseListener(ma);
             }
         }
     }
     
-    MouseAdapter p1Listener = new MouseAdapter(){
+    MouseAdapter ma = new MouseAdapter(){
         @Override
         public void mouseClicked(MouseEvent e) {
-            gui.infoLabel2.setText("Ammo: " + String.valueOf(--ammo));
-            for (int i = 0; i < gui.squares.length; i++) {
-                for (int j = 0; j < gui.squares[i].length; j++) {
-                    if(e.getSource() == gui.squares[i][j]){
-                        s.setBombCoordinates(j, i);
-                        for (int k = 0; k < s.getShipCoordinates().size(); k++) {
-                            if((int)s.getShipCoordinates().get(k)[0] == j && (int)s.getShipCoordinates().get(k)[1] == i){
-                                gui.squares[i][j].setBackground(Color.RED);
-                                shipsHit++;
+            if (e.getSource() != gui.cancelButton) {
+                gui.infoLabel2.setText("Ammo: " + String.valueOf(--ammo));
+                for (int i = 0; i < gui.squares.length; i++) {
+                    for (int j = 0; j < gui.squares[i].length; j++) {
+                        if(e.getSource() == gui.squares[i][j]){
+                            s.setBombCoordinates(j, i);
+                            for (int k = 0; k < s.getShipCoordinates().size(); k++) {
+                                if((int)s.getShipCoordinates().get(k)[0] == j && (int)s.getShipCoordinates().get(k)[1] == i){
+                                    gui.squares[i][j].setBackground(Color.RED);
+                                    shipsHit++;
+                                }
+                            }
+                            if (gui.squares[i][j].getBackground() == Color.BLACK){
+                                gui.squares[i][j].setText("X");
                             }
                         }
-                        if (gui.squares[i][j].getBackground() == Color.BLACK)
-                            gui.squares[i][j].setText("X");
                     }
                 }
-            }
             if (shipsHit == s.getShipCoordinates().size()){
                 gui.infoLabel3.setText("Victory");
             } else if (ammo < 1){
@@ -101,6 +104,38 @@ public class Player1 implements Runnable{
                 out.writeObject(s);
             } catch (IOException ex) {
                 System.out.println(ex.getMessage());
+            }
+            }
+        }
+        
+        @Override
+        public void mouseEntered(MouseEvent e) {
+            if (e.getSource() == gui.cancelButton){
+                gui.cancelButton.setBackground(Color.GREEN);
+                gui.cancelButton.setForeground(Color.BLACK);
+            }
+        }
+
+        @Override
+        public void mouseExited(MouseEvent e) {
+            if (e.getSource() == gui.cancelButton){
+                gui.cancelButton.setBackground(Color.BLACK);
+                gui.cancelButton.setForeground(Color.GREEN);
+            }
+        }
+        
+        @Override
+        public void mousePressed(MouseEvent e) {
+            if (e.getSource() == gui.cancelButton){
+                gui.cancelButton.setBackground(Color.BLACK);
+                gui.cancelButton.setForeground(Color.GREEN);
+            }
+        }
+            
+        @Override
+        public void mouseReleased(MouseEvent e) {
+            if (e.getSource() == gui.cancelButton){
+                System.exit(0);
             }
         }
     };
@@ -131,4 +166,4 @@ public class Player1 implements Runnable{
         }
         gui.infoLabel1.setText("");
     }
-}
+    }
