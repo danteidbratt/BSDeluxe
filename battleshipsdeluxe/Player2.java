@@ -32,19 +32,30 @@ public class Player2{
         gui.cancelButton.addMouseListener(ma);
     }
     
-    public void fuckingGoTime() throws IOException, ClassNotFoundException {
+    public void fuckingGoTime() throws IOException, ClassNotFoundException, InterruptedException {
         shipsPlaced = 0;
         shipsHit = 0;
         ammo = 10;
         addListenersToAll();
-        gui.infoLabel1.setText("Place your ships");
-        s = (SessionDeluxe)in.readObject();
-        out.writeObject(s);
-        while(ammo > 0 && shipsHit < s.getShipCoordinates().size()){
+        gui.infoLabel1.setText("       Place your ships");
+        while(true){
             s = (SessionDeluxe)in.readObject();
             bombReceived(s.getBombCoordinates()[0], s.getBombCoordinates()[1]);
-            out.writeObject(s);
+            if (s.getState() == 2) {
+                out.writeObject(s);
+            } else if (s.getState() == 3){
+                gui.infoLabel3.setText("Defeat");
+                break;
+                
+            } else if (s.getState() == 4){
+                gui.infoLabel3.setText("Victory");
+                break;
+            }
         }
+        System.out.println("tja2");
+        Thread.sleep(2000);
+        s.resetAll();
+        out.writeObject(s);
     }
     
     public void addListenersToAll(){
@@ -76,6 +87,7 @@ public class Player2{
                                 shipsPlaced++;
                                 if(shipsPlaced > 4){
                                     try {
+                                        s.setState(2);
                                         out.writeObject(s);
                                     } catch (IOException ex) {
                                         System.out.println(ex.getMessage());

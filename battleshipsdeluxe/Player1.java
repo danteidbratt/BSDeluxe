@@ -31,31 +31,27 @@ public class Player1 implements Runnable{
         this.in = in;
         this.out = out;
         this.s = s;
-        gui.setWindowBasics(5, playerNumber);
-        gui.cancelButton.addMouseListener(ma);
     }
     
     public void fuckingGoTime() throws IOException, ClassNotFoundException{
         shipsPlaced = 0;
         shipsHit = 0;
         ammo = 10;
-        out.writeObject(s);
-        s.resetAll();
+        gui.cancelButton.addMouseListener(ma);
         activity2 = new Thread(this);
-        activity2.start();
         loopAnimation = true;
-        gui.setSquares();
-        gui.setField();
-        out.writeObject(s);
+        activity2.start();
         s = (SessionDeluxe)in.readObject();
         loopAnimation = false;
         addListenersToAll();
-        while(ammo > 0 && shipsHit < s.getShipCoordinates().size()){
-            s = (SessionDeluxe)in.readObject();
+        while(true){
+            if (s.getState() == 2){
+                s = (SessionDeluxe)in.readObject();
+            } else {
+                break;
+            }
         }
-        removeListenersFromAll();
-        s.setState(3);
-        out.writeObject(s);
+        System.out.println("tja1");
     }
     
     public void addListenersToAll(){
@@ -95,16 +91,18 @@ public class Player1 implements Runnable{
                         }
                     }
                 }
-            if (shipsHit == s.getShipCoordinates().size()){
-                gui.infoLabel3.setText("Victory");
-            } else if (ammo < 1){
-                gui.infoLabel3.setText("Defeat");
-            }
-            try {
-                out.writeObject(s);
-            } catch (IOException ex) {
-                System.out.println(ex.getMessage());
-            }
+                if (shipsHit == s.getShipCoordinates().size()){
+                    gui.infoLabel3.setText("Victory");
+                    s.setState(3);
+                } else if (ammo < 1){
+                    gui.infoLabel3.setText("Defeat");
+                    s.setState(4);
+                }
+                try {
+                    out.writeObject(s);
+                } catch (IOException ex) {
+                    System.out.println(ex.getMessage());
+                }
             }
         }
         
@@ -142,7 +140,7 @@ public class Player1 implements Runnable{
     
     @Override
     public void run(){
-        String tempS = "Wait for opponent";
+        String tempS = "       Wait for opponent";
         while(loopAnimation){
             try {
                 gui.infoLabel1.setText(tempS);

@@ -16,6 +16,8 @@ public class GUI extends JFrame{
     JLabel infoLabel3 = new JLabel("");
     JPanel topPanel = new JPanel();
     JLabel cancelButton = new JLabel("Exit Game");
+    JPanel rightPanel = new JPanel();
+    JPanel leftPanel = new JPanel();
     
     int fieldSize;
     int playerNumber;
@@ -42,7 +44,7 @@ public class GUI extends JFrame{
         infoLabel3.setOpaque(true);
         infoLabel3.setForeground(Color.GREEN);
         infoPane.setLayout(new GridLayout(1, 3));
-        infoPane.setPreferredSize(new Dimension(500, 30));
+        infoPane.setPreferredSize(new Dimension(0, 30));
         infoPane.setBackground(Color.BLACK);
         infoPane.setOpaque(true);
         infoPane.add(infoLabel1);
@@ -51,21 +53,28 @@ public class GUI extends JFrame{
         cancelButton.setBackground(Color.BLACK);
         cancelButton.setOpaque(true);
         cancelButton.setForeground(Color.GREEN);
-        cancelButton.setPreferredSize(new Dimension(40, 30));
+        cancelButton.setPreferredSize(new Dimension(0, 30));
         cancelButton.setHorizontalAlignment(SwingConstants.CENTER);
         topPanel.setLayout(new BorderLayout());
         topPanel.add(cancelButton, BorderLayout.CENTER);
+        rightPanel.setBackground(Color.BLACK);
+        rightPanel.setOpaque(true);
+        rightPanel.setPreferredSize(new Dimension(30, 0));
+        leftPanel.setBackground(Color.BLACK);
+        leftPanel.setOpaque(true);
+        leftPanel.setPreferredSize(new Dimension(30, 0));
         add(topPanel, BorderLayout.NORTH);
         add(field, BorderLayout.CENTER);
         add(infoPane, BorderLayout.SOUTH);
-        setBackground(Color.BLACK);
+        add(rightPanel, BorderLayout.EAST);
+        add(leftPanel, BorderLayout.WEST);
         pack();
         setTitle("Battleships");
         setResizable(false);
         if(playerNumber == 1)
-            setLocation(100, 100);
+            setLocation(50, 100);
         if(playerNumber == 2)
-            setLocation(700, 100);
+            setLocation(650, 100);
         setVisible(true);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
     }

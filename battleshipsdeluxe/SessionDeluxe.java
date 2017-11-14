@@ -11,7 +11,8 @@ public class SessionDeluxe implements Serializable{
     public final int LOBBY = 0;
     public final int PLACESHIPS = 1;
     public final int FIRE = 2;
-    public final int GAMEOVER = 3;
+    public final int P1_WINS = 3;
+    public final int P2_WINS = 4;
     
     private int state;
     private List<Integer[]> shipCoordinates = new ArrayList<>();
@@ -28,8 +29,8 @@ public class SessionDeluxe implements Serializable{
     /**
      * 0 = Searching for opponent,
      * 1 = Place battleships,
-     * 2 = Fire at battleships
-     * 3 = Game Over
+     * 2 = Player 1 wins,
+     * 3 = Player 2 wins,
      * @param state 
      */
     
@@ -61,6 +62,7 @@ public class SessionDeluxe implements Serializable{
     
     public void resetAll(){
         shipCoordinates = new ArrayList<>();
+        state = 1;
     }
     
 }
