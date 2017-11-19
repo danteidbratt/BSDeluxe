@@ -47,12 +47,12 @@ public class SessionDeluxe implements Serializable{
         ammo = 8;
         
         // Visual settings (bgc, fsc and ssc must be different)
-        floatingShipColor = Color.BLUE;
+        floatingShipColor = Color.GREEN;
         sunkenShipColor = Color.RED;
-        gridColor = Color.WHITE;
+        gridColor = Color.CYAN;
         backgroundColor = Color.BLACK;
-        placementAimColor = Color.GREEN;
-        bombAimColor = Color.YELLOW;
+        placementAimColor = Color.ORANGE;
+        bombAimColor = Color.ORANGE;
         
         shipCoordinates = new int[numberOfShips][2];
     }

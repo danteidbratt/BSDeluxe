@@ -131,6 +131,7 @@ public class Player1{
                                         }
                                     }
                                 }
+                                gui.infoLabel3.setText("");
                                 deactivateNuke();
                             }
                             else {
@@ -156,6 +157,9 @@ public class Player1{
                     System.out.println(ex.getMessage());
                 }
                 gui.infoLabel2.setText("Ammo: " + String.valueOf(ammo));
+                if (ammo == s.ammo-1){
+                    gui.infoLabel3.setText("Press 'N' for Nuke       ");
+                }
             }
         }
         
