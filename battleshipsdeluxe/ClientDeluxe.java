@@ -26,6 +26,7 @@ public class ClientDeluxe{
     public void orderSelector() throws IOException, ClassNotFoundException, InterruptedException{
         if (playerNumber == 1) {
             Player1 p1 = new Player1(playerNumber, s, in, out, fieldSize);
+            s.setState(1);
             out.writeObject(s);
             while(true){
                 p1.goTime();

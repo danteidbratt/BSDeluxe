@@ -42,9 +42,9 @@ public class SessionDeluxe implements Serializable{
         nukeState = 0;
         
         // Game settings
-        fieldSize = 4;
-        numberOfShips = 5;
-        ammo = 8;
+        fieldSize = 6;
+        numberOfShips = 4;
+        ammo = 12;
         
         // Visual settings (bgc, fsc and ssc must be different)
         floatingShipColor = Color.GREEN;
@@ -54,7 +54,7 @@ public class SessionDeluxe implements Serializable{
         placementAimColor = Color.ORANGE;
         bombAimColor = Color.ORANGE;
         
-        shipCoordinates = new int[numberOfShips][2];
+        shipCoordinates = new int[numberOfShips*3][2];
     }
     
     public int getPlayerNumber(){
@@ -81,6 +81,7 @@ public class SessionDeluxe implements Serializable{
         shipCoordinates[shipCounter][0] = x;
         shipCoordinates[shipCounter][1] = y;
         shipCounter++;
+        System.out.println(shipCounter);
     }
     
     public int[][] getShipCoordinates(){

@@ -50,8 +50,6 @@ public class Player1{
         this.bombAimColor = s.bombAimColor;
         gui = new GUI(s);
         gui.field.addKeyListener(ka);
-        gui.field.setFocusable(true);
-        gui.field.requestFocusInWindow();
     }
     
     public void goTime() throws IOException, ClassNotFoundException, InterruptedException{
@@ -65,6 +63,10 @@ public class Player1{
         ammo = s.ammo;
         gui.cancelButton.addMouseListener(ma);
         s = (SessionDeluxe)in.readObject();
+        gui.setFocusable(true);
+        gui.field.setFocusable(true);
+        gui.requestFocus();
+        gui.field.requestFocusInWindow();
         addListenersToGrid();
         gui.infoLabel4.setText("       Fire away!");
         gui.infoLabel2.setText("Ammo: " + String.valueOf(ammo));
@@ -173,6 +175,8 @@ public class Player1{
                 for (int i = 0; i < gui.squares.length; i++) {
                     for (int j = 0; j < gui.squares[i].length; j++) {
                         if (e.getSource() == gui.squares[i][j]) {
+                            aimX = j;
+                            aimY = i;
                             if (s.nukeState == 1) {
                                 for (int k = i-1; k < i+2; k++) {
                                     for (int l = j-1; l < j+2; l++) {
@@ -183,8 +187,6 @@ public class Player1{
                             else {
                                 gui.squares[i][j].setBorder(BorderFactory.createLineBorder(bombAimColor, 5));
                             }
-                            aimX = j;
-                            aimY = i;
                         }
                     }
                 }
@@ -197,11 +199,9 @@ public class Player1{
                 gui.cancelButton.setBackground(backgroundColor);
                 gui.cancelButton.setForeground(gridColor);
             } 
-            else {
-                for (JLabel[] square : gui.squares) {
-                    for (JLabel square1 : square) {
-                        square1.setBorder(BorderFactory.createLineBorder(gridColor, 1));
-                    }
+            for (JLabel[] square : gui.squares) {
+                for (JLabel square1 : square) {
+                    square1.setBorder(BorderFactory.createLineBorder(gridColor, 1));
                 }
             }
         }

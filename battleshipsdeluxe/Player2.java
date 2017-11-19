@@ -1,6 +1,8 @@
 package battleshipsdeluxe;
 
 import java.awt.Color;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
@@ -16,6 +18,9 @@ public class Player2{
     int shipsPlaced;
     int shipsHit;
     int ammo;
+    boolean vertical;
+    int aimX;
+    int aimY;
     
     GUI gui;
     ObjectOutputStream out;
@@ -40,17 +45,22 @@ public class Player2{
         this.sunkenShipColor = s.sunkenShipColor;
         this.placementAimColor = s.placementAimColor;
         shipsPlaced = 0;
+        vertical = true;
         gui = new GUI(s);
+        gui.field.addKeyListener(ka);
     }
     
     public void goTime() throws IOException, ClassNotFoundException, InterruptedException {
         gui.setWindowBasics(playerNumber);
+        gui.field.setFocusable(true);
+        gui.field.requestFocusInWindow();
         gui.cancelButton.addMouseListener(ma);
         shipsPlaced = 0;
         shipsHit = 0;
         ammo = s.ammo;
         addListenersToGrid();
         gui.infoLabel1.setText("       Place your ships");
+        gui.infoLabel3.setText("Press 'R' to rotate       ");
         gui.revalidate();
         gui.repaint();
         while((s = (SessionDeluxe)in.readObject()).getState() == 2){
@@ -92,24 +102,56 @@ public class Player2{
             if (e.getSource() != gui.cancelButton) {
                 for (int i = 0; i < gui.squares.length; i++) {
                     for (int j = 0; j < gui.squares[i].length; j++) {
-                        if(e.getSource() == gui.squares[i][j]){
-                            if(gui.squares[i][j].getBackground() == backgroundColor){
+                        if (e.getSource() == gui.squares[i][j]){
+                            if (isPlaceable()){
                                 shipsPlaced++;
-                                s.setShipCoordinates(j, i);
-                                gui.squares[i][j].setBackground(floatingShipColor);
-                                if(shipsPlaced > s.numberOfShips-1){
+                                if (vertical) {
+                                    for (int k = i-1; k < i+2; k++) {
+                                        gui.squares[k][j].setBackground(floatingShipColor);
+                                        s.setShipCoordinates(j, k);
+                                    }
+                                }
+                                else {
+                                    for (int k = j-1; k < j+2; k++) {
+                                        gui.squares[i][k].setBackground(floatingShipColor);
+                                        s.setShipCoordinates(k, i);
+                                    }
+                                }
+                                if(shipsPlaced == s.numberOfShips){
+                                    s.setState(2);
+                                    gui.infoLabel1.setText("");
+                                    gui.infoLabel2.setText("Shots remaining: " + ammo);
+                                    for (JLabel[] square : gui.squares) {
+                                        for (JLabel square1 : square) {
+                                            square1.setBorder(BorderFactory.createLineBorder(gridColor, 1));
+                                        }
+                                    }
+                                    removeListenersFromGrid();
                                     try {
-                                        s.setState(2);
                                         out.writeObject(s);
                                     } catch (IOException ex) {
                                         System.out.println(ex.getMessage());
                                     }
-                                    gui.infoLabel1.setText("");
-                                    gui.infoLabel2.setText("Shots remaining: " + ammo);
-                                    gui.squares[i][j].setBorder(BorderFactory.createLineBorder(gridColor, 1));
-                                    removeListenersFromGrid();
                                 }
-                            } 
+
+//                                if(gui.squares[i][j].getBackground() == backgroundColor){
+//                                    shipsPlaced++;
+//                                    s.setShipCoordinates(j, i);
+//                                    gui.squares[i][j].setBackground(floatingShipColor);
+//                                    if(shipsPlaced > s.numberOfShips-1){
+//                                        try {
+//                                            s.setState(2);
+//                                            out.writeObject(s);
+//                                        } catch (IOException ex) {
+//                                            System.out.println(ex.getMessage());
+//                                        }
+//                                        gui.infoLabel1.setText("");
+//                                        gui.infoLabel2.setText("Shots remaining: " + ammo);
+//                                        gui.squares[i][j].setBorder(BorderFactory.createLineBorder(gridColor, 1));
+//                                        removeListenersFromGrid();
+//                                    }
+//                                } 
+                            }
                         }
                     }
                 }
@@ -122,10 +164,21 @@ public class Player2{
                 gui.cancelButton.setBackground(gridColor);
                 gui.cancelButton.setForeground(backgroundColor);
             } else {
-                for (JLabel[] square : gui.squares) {
-                    for (JLabel square1 : square) {
-                        if (e.getSource() == square1) {
-                            square1.setBorder(BorderFactory.createLineBorder(placementAimColor, 5));
+                for (int i = 1; i < gui.squares.length-1; i++) {
+                    for (int j = 1; j < gui.squares.length-1; j++) {
+                        if(e.getSource() == gui.squares[i][j]){
+                            aimX = j;
+                            aimY = i;
+                            if(vertical){
+                                for (int k = i-1; k < i+2; k++) {
+                                    gui.squares[k][j].setBorder(BorderFactory.createLineBorder(placementAimColor, 5));
+                                }
+                            }
+                            else {
+                                for (int k = j-1; k < j+2; k++) {
+                                    gui.squares[i][k].setBorder(BorderFactory.createLineBorder(placementAimColor, 5));
+                                }
+                            }
                         }
                     }
                 }
@@ -140,9 +193,7 @@ public class Player2{
             } else {
                 for (JLabel[] square : gui.squares) {
                     for (JLabel square1 : square) {
-                        if (e.getSource() == square1) {
-                            square1.setBorder(BorderFactory.createLineBorder(gridColor, 1));
-                        }
+                        square1.setBorder(BorderFactory.createLineBorder(gridColor, 1));
                     }
                 }
             }
@@ -201,5 +252,58 @@ public class Player2{
                 s.setState(4);
             }
         }
+    }
+    
+    KeyAdapter ka = new KeyAdapter(){
+        @Override
+        public void keyPressed(KeyEvent e) {
+            if (e.getKeyChar() == 'r' && s.getState() == 1) {
+                System.out.println("R");
+                for (JLabel[] square : gui.squares) {
+                    for (JLabel square1 : square) {
+                        square1.setBorder(BorderFactory.createLineBorder(gridColor, 1));
+                    }
+                }
+                if (vertical) {
+                    for (int i = aimX-1; i < aimX+2; i++) {
+                        gui.squares[aimY][i].setBorder(BorderFactory.createLineBorder(placementAimColor, 5));
+                    }
+                    vertical = false;
+                    }
+                else {
+                    for (int j = aimY-1; j < aimY+2; j++) {
+                        gui.squares[j][aimX].setBorder(BorderFactory.createLineBorder(placementAimColor, 5));
+                    }
+                    vertical = true;
+                }
+            }
+            gui.repaint();
+        }
+    };
+    
+    public boolean isPlaceable(){
+        if (vertical) {
+            if(aimY < 2 || aimY > gui.squares.length-3) {
+                return false;
+            }
+            for (int i = aimY-1; i < aimY+2; i++) {
+                for (int[] sc : s.getShipCoordinates()) {
+                    if (sc[0] == aimX && sc[1] == i)
+                        return false;
+                }
+            }
+        }
+        else {
+            if(aimX < 2 || aimX > gui.squares.length-3) {
+                return false;
+            }
+            for (int i = aimX-1; i < aimX+2; i++) {
+                for (int[] sc : s.getShipCoordinates()) {
+                    if (sc[0] == i && sc[1] == aimY)
+                        return false;
+                }
+            }
+        }
+        return true;
     }
 }
