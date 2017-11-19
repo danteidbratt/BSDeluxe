@@ -6,34 +6,32 @@ import java.net.*;
 
 public class ServerDeluxe {
     
-    public ServerDeluxe() throws IOException, ClassNotFoundException {
-        SessionDeluxe s = new SessionDeluxe();
-        ServerSocket serverSocket = new ServerSocket(12321);
-        
-        Socket clientSocket1 = serverSocket.accept();
-        ObjectOutputStream out1 = new ObjectOutputStream(clientSocket1.getOutputStream());
-        ObjectInputStream in1 = new ObjectInputStream(clientSocket1.getInputStream());
-        
-        
-        Socket clientSocket2 = serverSocket.accept();
-        ObjectOutputStream out2 = new ObjectOutputStream(clientSocket2.getOutputStream());
-        ObjectInputStream in2 = new ObjectInputStream(clientSocket2.getInputStream());
-        
-        while(true){
-            out1.writeObject(s);
-            s = (SessionDeluxe)in1.readObject();
-            out2.writeObject(s);
-            s = (SessionDeluxe)in2.readObject();
-        }
+    Socket cs1;
+    Socket cs2;
+    SessionDeluxe s;
+    
+    public ServerDeluxe(Socket cs1, Socket cs2) {
+        this.cs1 = cs1;
+        this.cs2 = cs2;
+        s = new SessionDeluxe();
     }
     
-    public static void main(String[] args){
-        try{
-            ServerDeluxe s = new ServerDeluxe();
-        } catch (IOException e) {
-            System.out.println("Server:\n" + e.getMessage());
-        } catch (ClassNotFoundException ex) {
-            System.out.println(ex.getMessage());
+    public void startServing() {
+        
+        try {
+            ObjectOutputStream out1 = new ObjectOutputStream(cs1.getOutputStream());
+            ObjectInputStream in1 = new ObjectInputStream(cs1.getInputStream());
+            ObjectOutputStream out2 = new ObjectOutputStream(cs2.getOutputStream());
+            ObjectInputStream in2 = new ObjectInputStream(cs2.getInputStream());
+            
+            while (true) {
+                out1.writeObject(s);
+                s = (SessionDeluxe) in1.readObject();
+                out2.writeObject(s);
+                s = (SessionDeluxe) in2.readObject();
+            }
+        } catch (IOException | ClassNotFoundException ioe) {
+            System.out.println(ioe.getMessage());
         }
     }
 }

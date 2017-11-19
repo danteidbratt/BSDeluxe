@@ -6,6 +6,7 @@ import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 
 public class Player2{
@@ -16,49 +17,48 @@ public class Player2{
     int shipsHit;
     int ammo;
     
-    GUI gui = new GUI();
-    Thread activity2;
+    GUI gui;
     ObjectOutputStream out;
     ObjectInputStream in;
-    boolean loopAnimation;
     SessionDeluxe s;
     
-    public Player2(int playerNumber, SessionDeluxe s, ObjectInputStream in, ObjectOutputStream out){
+    public Player2(int playerNumber, SessionDeluxe s, ObjectInputStream in, ObjectOutputStream out, int fieldSize){
         this.playerNumber = playerNumber;
         this.in = in;
         this.out = out;
         this.s = s;
-        gui.setWindowBasics(5, playerNumber);
-        gui.cancelButton.addMouseListener(ma);
+        this.fieldSize = fieldSize;
+        shipsPlaced = 0;
+        gui = new GUI(fieldSize);
     }
     
     public void fuckingGoTime() throws IOException, ClassNotFoundException, InterruptedException {
+        gui.setWindowBasics(playerNumber);
+        gui.cancelButton.addMouseListener(ma);
         shipsPlaced = 0;
         shipsHit = 0;
-        ammo = 10;
-        addListenersToAll();
+        ammo = s.ammo;
+        addListenersToGrid();
         gui.infoLabel1.setText("       Place your ships");
-        while(true){
-            s = (SessionDeluxe)in.readObject();
+        
+        while((s = (SessionDeluxe)in.readObject()).getState() == 2){
             bombReceived(s.getBombCoordinates()[0], s.getBombCoordinates()[1]);
-            if (s.getState() == 2) {
-                out.writeObject(s);
-            } else if (s.getState() == 3){
-                gui.infoLabel3.setText("Defeat");
+            if (s.getState() > 2)
                 break;
-                
-            } else if (s.getState() == 4){
-                gui.infoLabel3.setText("Victory");
-                break;
-            }
+            out.writeObject(s);
         }
-        System.out.println("tja2");
-        Thread.sleep(2000);
-        s.resetAll();
+        System.out.println("2. under loopen, state: " + s.getState());
+        if(s.getState() == 3)
+            gui.infoLabel3.setText("Defeat       ");
+        if(s.getState() == 4)
+            gui.infoLabel3.setText("Victory       ");
         out.writeObject(s);
+        Thread.sleep(2000);
+        s = new SessionDeluxe();
+        in.readObject();
     }
     
-    public void addListenersToAll(){
+    public void addListenersToGrid(){
         for (JLabel[] square : gui.squares) {
             for (JLabel square1 : square) {
                 square1.addMouseListener(ma);
@@ -66,7 +66,7 @@ public class Player2{
         }
     }
     
-    public void removeListenersFromAll(){
+    public void removeListenersFromGrid(){
         for (JLabel[] square : gui.squares) {
             for (JLabel square1 : square) {
                 square1.removeMouseListener(ma);
@@ -82,19 +82,28 @@ public class Player2{
                     for (int j = 0; j < gui.squares[i].length; j++) {
                         if(e.getSource() == gui.squares[i][j]){
                             if(gui.squares[i][j].getBackground() == Color.BLACK){
-                                gui.squares[i][j].setBackground(Color.GREEN);
-                                s.setShipCoordinates(j, i);
                                 shipsPlaced++;
-                                if(shipsPlaced > 4){
+                                s.setShipCoordinates(j, i);
+                                gui.squares[i][j].setBackground(Color.GREEN);
+                                if(shipsPlaced > s.numberOfShips-1){
                                     try {
                                         s.setState(2);
+                                        System.out.println("state: " + s.getState() + 
+                                                "\nship coordinates");
+                                        for (int k = 0; k < s.getShipCoordinates().length; k++) {
+                                            for (int l = 0; l < s.getShipCoordinates()[k].length; l++) {
+                                                System.out.print(s.getShipCoordinates()[k][l] + "\t");
+                                            }
+                                            System.out.println();
+                                        }
                                         out.writeObject(s);
                                     } catch (IOException ex) {
                                         System.out.println(ex.getMessage());
                                     }
                                     gui.infoLabel1.setText("");
                                     gui.infoLabel2.setText("Shots remaining: " + ammo);
-                                    removeListenersFromAll();
+                                    gui.squares[i][j].setBorder(BorderFactory.createLineBorder(Color.GREEN, 1));
+                                    removeListenersFromGrid();
                                 }
                             } 
                         }
@@ -108,6 +117,14 @@ public class Player2{
             if (e.getSource() == gui.cancelButton){
                 gui.cancelButton.setBackground(Color.GREEN);
                 gui.cancelButton.setForeground(Color.BLACK);
+            } else {
+                for (JLabel[] square : gui.squares) {
+                    for (JLabel square1 : square) {
+                        if (e.getSource() == square1) {
+                            square1.setBorder(BorderFactory.createLineBorder(Color.GREEN, 5));
+                        }
+                    }
+                }
             }
         }
 
@@ -116,6 +133,14 @@ public class Player2{
             if (e.getSource() == gui.cancelButton){
                 gui.cancelButton.setBackground(Color.BLACK);
                 gui.cancelButton.setForeground(Color.GREEN);
+            } else {
+                for (JLabel[] square : gui.squares) {
+                    for (JLabel square1 : square) {
+                        if (e.getSource() == square1) {
+                            square1.setBorder(BorderFactory.createLineBorder(Color.GREEN, 1));
+                        }
+                    }
+                }
             }
         }
         
@@ -144,10 +169,11 @@ public class Player2{
         } else if (gui.squares[y][x].getBackground() == Color.BLACK) {
             gui.squares[y][x].setText("X");
         }
-        if (shipsHit >= s.getShipCoordinates().size()){
-            gui.infoLabel3.setText("Defeat");
-        } else if (ammo < 1) {
-            gui.infoLabel3.setText("Victory");
+        if (shipsHit == s.getShipCoordinates().length){
+            s.setState(3);
+        }
+        else if (ammo < 1) {
+            s.setState(4);
         }
     }
 }

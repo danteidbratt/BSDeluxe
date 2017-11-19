@@ -2,7 +2,6 @@
 package battleshipsdeluxe;
 
 import java.io.*;
-import java.util.*;
 
 public class SessionDeluxe implements Serializable{
     
@@ -15,15 +14,34 @@ public class SessionDeluxe implements Serializable{
     public final int P2_WINS = 4;
     
     private int state;
-    private List<Integer[]> shipCoordinates = new ArrayList<>();
+    
+    // 0 = Unused, 1 = Using, 2 = Used
+    public int nukeState;
+    
+    public int shipCounter;
+    public int fieldSize;
+    public int numberOfShips;
+    public int ammo;
+    private int[][] shipCoordinates;
     private int[] bombCoordinates = new int[2];
     
     public SessionDeluxe(){
-        playerNumber = 1;
+        // Do not touch
+        state = 0;
+        playerNumber = 0;
+        shipCounter = 0;
+        nukeState = 0;
+        
+        // Settings
+        fieldSize = 7;
+        numberOfShips = 4;
+        ammo = 10;
+        
+        shipCoordinates = new int[numberOfShips][2];
     }
     
     public int getPlayerNumber(){
-        return playerNumber++;
+        return ++playerNumber;
     }
     
     /**
@@ -42,12 +60,13 @@ public class SessionDeluxe implements Serializable{
         return state;
     }
     
-    public void setShipCoordinates(int x, int y){
-        Integer[] temp = {x,y};
-        shipCoordinates.add(temp);
+    public void setShipCoordinates(int x, int y) {
+        shipCoordinates[shipCounter][0] = x;
+        shipCoordinates[shipCounter][1] = y;
+        shipCounter++;
     }
     
-    public List<Integer[]> getShipCoordinates(){
+    public int[][] getShipCoordinates(){
         return shipCoordinates;
     }
     
@@ -59,10 +78,4 @@ public class SessionDeluxe implements Serializable{
     public int[] getBombCoordinates(){
         return bombCoordinates;
     }
-    
-    public void resetAll(){
-        shipCoordinates = new ArrayList<>();
-        state = 1;
-    }
-    
 }
