@@ -58,6 +58,7 @@ public class Player2{
         shipsPlaced = 0;
         shipsHit = 0;
         ammo = s.ammo;
+        s.setState(1);
         addListenersToGrid();
         gui.infoLabel1.setText("       Place your ships");
         gui.infoLabel3.setText("Press 'R' to rotate       ");

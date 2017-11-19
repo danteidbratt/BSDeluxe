@@ -89,7 +89,6 @@ public class Player1{
             exposeShips();
         }
         Thread.sleep(3000);
-        s.setState(1);
         out.writeObject(s);
     }
     
