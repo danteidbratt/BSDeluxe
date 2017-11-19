@@ -136,7 +136,7 @@ public class Player1{
                 for (int i = 0; i < gui.squares.length; i++) {
                     for (int j = 0; j < gui.squares[i].length; j++) {
                         if (e.getSource() == gui.squares[i][j]) {
-                            if (s.nukeState == 1 && i > 0 && i < gui.squares.length-1 && j > 0 && j < gui.squares.length-1) {
+                            if (s.nukeState == 1) {
                                 for (int k = i-1; k < i+2; k++) {
                                     for (int l = j-1; l < j+2; l++) {
                                         gui.squares[k][l].setBorder(BorderFactory.createLineBorder(Color.RED, 5));
@@ -229,12 +229,10 @@ public class Player1{
     
     public void activateNuke(){
         s.nukeState = 1;
-        if(aimX > 0 && aimX < gui.squares.length-1 && aimY > 0 && aimY < gui.squares.length-1) {
-            for (int i = aimY-1; i < aimY+2; i++) {
-                for (int j = aimX-1; j < aimX+2; j++) {
-                    gui.squares[i][j].setBorder(BorderFactory.createLineBorder(Color.RED, 5));
-                    gui.repaint();
-                }
+        for (int i = aimY-1; i < aimY+2; i++) {
+            for (int j = aimX-1; j < aimX+2; j++) {
+                gui.squares[i][j].setBorder(BorderFactory.createLineBorder(Color.RED, 5));
+                gui.repaint();
             }
         }
     }

@@ -26,7 +26,7 @@ public class GUI extends JFrame{
     
     public GUI(int fieldSize){
         this.fieldSize = fieldSize;
-        squares = new JLabel[fieldSize][fieldSize];
+        squares = new JLabel[fieldSize+2][fieldSize+2];
     }
 
     public void setWindowBasics(int playerNumber) {
@@ -114,12 +114,10 @@ public class GUI extends JFrame{
     
     public void setField(){
         field.removeAll();
-        for (JLabel[] square : squares) {
-            for (JLabel jLabel : square) {
-                field.add(jLabel);
+        for (int i = 1; i < squares.length-1; i++) {
+            for (int j = 1; j < squares.length-1; j++) {
+                field.add(squares[i][j]);
             }
         }
-        revalidate();
-        repaint();
     }
 }
