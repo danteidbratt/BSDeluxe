@@ -30,6 +30,12 @@ public class Player1{
     Socket bridge;
     SessionDeluxe s;
     
+    Color backgroundColor;
+    Color gridColor;
+    Color floatingShipColor;
+    Color sunkenShipColor;
+    Color bombAimColor;
+    
     
     public Player1(int playerNumber, SessionDeluxe s, ObjectInputStream in, ObjectOutputStream out, int fieldSize){
         this.playerNumber = playerNumber;
@@ -37,22 +43,29 @@ public class Player1{
         this.out = out;
         this.s = s;
         this.fieldSize = fieldSize;
-        gui = new GUI(fieldSize);
+        this.backgroundColor = s.backgroundColor;
+        this.gridColor = s.gridColor;
+        this.floatingShipColor = s.floatingShipColor;
+        this.sunkenShipColor = s.sunkenShipColor;
+        this.bombAimColor = s.bombAimColor;
+        gui = new GUI(s);
+        gui.field.addKeyListener(ka);
+        gui.field.setFocusable(true);
+        gui.field.requestFocusInWindow();
     }
     
-    public void fuckingGoTime() throws IOException, ClassNotFoundException, InterruptedException{
+    public void goTime() throws IOException, ClassNotFoundException, InterruptedException{
         gui.setWindowBasics(playerNumber);
         gui.infoLabel1.setText("       Waiting for opponent...");
         gui.infoLabel2.setText("");
+        gui.revalidate();
+        gui.repaint();
         shipsPlaced = 0;
         shipsHit = 0;
         ammo = s.ammo;
         gui.cancelButton.addMouseListener(ma);
         s = (SessionDeluxe)in.readObject();
         addListenersToGrid();
-        gui.field.addKeyListener(ka);
-        gui.field.setFocusable(true);
-        gui.field.requestFocusInWindow();
         gui.infoLabel4.setText("       Fire away!");
         gui.infoLabel2.setText("Ammo: " + String.valueOf(ammo));
         gui.infoPane.remove(gui.infoLabel1);
@@ -71,8 +84,9 @@ public class Player1{
         }
         else if (s.getState() == 4) {
             gui.infoLabel3.setText("Defeat       ");
+            exposeShips();
         }
-        Thread.sleep(2000);
+        Thread.sleep(3000);
         s.setState(1);
         out.writeObject(s);
     }
@@ -101,19 +115,38 @@ public class Player1{
                     for (int j = 0; j < gui.squares[i].length; j++) {
                         if(e.getSource() == gui.squares[i][j]){
                             s.setBombCoordinates(j, i);
-                            for (int k = 0; k < s.getShipCoordinates().length; k++) {
-                                if((int)s.getShipCoordinates()[k][0] == j &&
-                                   (int)s.getShipCoordinates()[k][1] == i &&
-                                    gui.squares[i][j].getBackground() != Color.RED){
-                                    gui.squares[i][j].setBackground(Color.RED);
-                                    shipsHit++;
-                                    ammo--;
+                            if (s.nukeState == 1) {
+                                for (int k = i-1; k < i+2; k++) {
+                                    for (int l = j-1; l < j+2; l++) {
+                                        for (int m = 0; m < s.getShipCoordinates().length; m++) {
+                                            if((int)s.getShipCoordinates()[m][0] == l &&
+                                               (int)s.getShipCoordinates()[m][1] == k &&
+                                                gui.squares[k][l].getBackground() != sunkenShipColor){
+                                                gui.squares[k][l].setBackground(sunkenShipColor);
+                                                shipsHit++;
+                                            }
+                                        }
+                                        if (gui.squares[k][l].getBackground() == backgroundColor && !gui.squares[k][l].getText().equals("X")){
+                                            gui.squares[k][l].setText("X");
+                                        }
+                                    }
+                                }
+                                deactivateNuke();
+                            }
+                            else {
+                                for (int k = 0; k < s.getShipCoordinates().length; k++) {
+                                    if((int)s.getShipCoordinates()[k][0] == j &&
+                                       (int)s.getShipCoordinates()[k][1] == i &&
+                                        gui.squares[i][j].getBackground() != sunkenShipColor){
+                                        gui.squares[i][j].setBackground(sunkenShipColor);
+                                        shipsHit++;
+                                    }
+                                }
+                                if (gui.squares[i][j].getBackground() == backgroundColor && !gui.squares[i][j].getText().equals("X")){
+                                    gui.squares[i][j].setText("X");
                                 }
                             }
-                            if (gui.squares[i][j].getBackground() == Color.BLACK && !gui.squares[i][j].getText().equals("X")){
-                                gui.squares[i][j].setText("X");
-                                ammo--;
-                            }
+                            ammo--;
                         }
                     }
                 }
@@ -129,8 +162,8 @@ public class Player1{
         @Override
         public void mouseEntered(MouseEvent e) {
             if (e.getSource() == gui.cancelButton){
-                gui.cancelButton.setBackground(Color.GREEN);
-                gui.cancelButton.setForeground(Color.BLACK);
+                gui.cancelButton.setBackground(gridColor);
+                gui.cancelButton.setForeground(backgroundColor);
             } 
             else {
                 for (int i = 0; i < gui.squares.length; i++) {
@@ -139,12 +172,12 @@ public class Player1{
                             if (s.nukeState == 1) {
                                 for (int k = i-1; k < i+2; k++) {
                                     for (int l = j-1; l < j+2; l++) {
-                                        gui.squares[k][l].setBorder(BorderFactory.createLineBorder(Color.RED, 5));
+                                        gui.squares[k][l].setBorder(BorderFactory.createLineBorder(bombAimColor, 5));
                                     }
                                 }
                             } 
                             else {
-                                gui.squares[i][j].setBorder(BorderFactory.createLineBorder(Color.RED, 5));
+                                gui.squares[i][j].setBorder(BorderFactory.createLineBorder(bombAimColor, 5));
                             }
                             aimX = j;
                             aimY = i;
@@ -152,58 +185,28 @@ public class Player1{
                     }
                 }
             }
-//            else if (s.nukeState == 1) {
-//                for (int i = 1; i < gui.squares.length-1; i++) {
-//                    for (int j = 1; j < gui.squares[i].length-1; j++) {
-//                        if (e.getSource() == gui.squares[i][j]){
-//                            for (int k = i-1; k < i+2; k++) {
-//                                for (int l = j-1; l < j+2; l++) {
-//                                    gui.squares[k][l].setBorder(BorderFactory.createLineBorder(Color.RED, 5));
-//                                    aimX = j;
-//                                    aimY = i;
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
-//            }
         }
 
         @Override
         public void mouseExited(MouseEvent e) {
             if (e.getSource() == gui.cancelButton){
-                gui.cancelButton.setBackground(Color.BLACK);
-                gui.cancelButton.setForeground(Color.GREEN);
+                gui.cancelButton.setBackground(backgroundColor);
+                gui.cancelButton.setForeground(gridColor);
             } 
             else {
                 for (JLabel[] square : gui.squares) {
                     for (JLabel square1 : square) {
-//                        if (e.getSource() == square1) {
-                            square1.setBorder(BorderFactory.createLineBorder(Color.GREEN, 1));
-//                        }
+                        square1.setBorder(BorderFactory.createLineBorder(gridColor, 1));
                     }
                 }
             }
-//            else if (s.nukeState == 1) {
-//                for (int i = 1; i < gui.squares.length-1; i++) {
-//                    for (int j = 1; j < gui.squares[i].length-1; j++) {
-//                        if (e.getSource() == gui.squares[i][j]){
-//                            for (int k = i-1; k < i+2; k++) {
-//                                for (int l = j-1; l < j+2; l++) {
-//                                    gui.squares[k][l].setBorder(BorderFactory.createLineBorder(Color.GREEN, 1));
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
-//            }
         }
         
         @Override
         public void mousePressed(MouseEvent e) {
             if (e.getSource() == gui.cancelButton){
-                gui.cancelButton.setBackground(Color.BLACK);
-                gui.cancelButton.setForeground(Color.GREEN);
+                gui.cancelButton.setBackground(backgroundColor);
+                gui.cancelButton.setForeground(gridColor);
             }
         }
             
@@ -219,32 +222,41 @@ public class Player1{
         @Override
         public void keyPressed(KeyEvent e) {
             if (e.getKeyChar() == 'n') {
-                if (s.nukeState != 1)
+                if (s.nukeState == 0) {
+                    s.nukeState = 1;
                     activateNuke();
-                else 
+                }
+                else if (s.nukeState == 1) {
+                    s.nukeState = 0;
                     deactivateNuke();
+                }
             }
         }
     };
     
     public void activateNuke(){
-        s.nukeState = 1;
         for (int i = aimY-1; i < aimY+2; i++) {
             for (int j = aimX-1; j < aimX+2; j++) {
-                gui.squares[i][j].setBorder(BorderFactory.createLineBorder(Color.RED, 5));
+                gui.squares[i][j].setBorder(BorderFactory.createLineBorder(bombAimColor, 5));
                 gui.repaint();
             }
         }
     }
     
     public void deactivateNuke(){
-        s.nukeState = 0;
         for (JLabel[] square : gui.squares) {
             for (JLabel square1 : square) {
-                square1.setBorder(BorderFactory.createLineBorder(Color.GREEN, 1));
+                square1.setBorder(BorderFactory.createLineBorder(gridColor, 1));
             }
         }
-        gui.squares[aimY][aimX].setBorder(BorderFactory.createLineBorder(Color.RED, 5));
+        gui.squares[aimY][aimX].setBorder(BorderFactory.createLineBorder(bombAimColor, 5));
         gui.repaint();
+    }
+    
+    public void exposeShips(){
+        for (int[] sc : s.getShipCoordinates()) {
+            if (gui.squares[sc[1]][sc[0]].getBackground() == backgroundColor)
+                gui.squares[sc[1]][sc[0]].setBackground(floatingShipColor);
+        }
     }
 }

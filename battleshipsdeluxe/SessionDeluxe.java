@@ -1,6 +1,7 @@
 
 package battleshipsdeluxe;
 
+import java.awt.Color;
 import java.io.*;
 
 public class SessionDeluxe implements Serializable{
@@ -22,6 +23,14 @@ public class SessionDeluxe implements Serializable{
     public int fieldSize;
     public int numberOfShips;
     public int ammo;
+    
+    public Color floatingShipColor;
+    public Color sunkenShipColor;
+    public Color gridColor;
+    public Color backgroundColor;
+    public Color placementAimColor;
+    public Color bombAimColor;
+    
     private int[][] shipCoordinates;
     private int[] bombCoordinates = new int[2];
     
@@ -32,10 +41,18 @@ public class SessionDeluxe implements Serializable{
         shipCounter = 0;
         nukeState = 0;
         
-        // Settings
-        fieldSize = 7;
-        numberOfShips = 4;
-        ammo = 10;
+        // Game settings
+        fieldSize = 4;
+        numberOfShips = 5;
+        ammo = 8;
+        
+        // Visual settings (bgc, fsc and ssc must be different)
+        floatingShipColor = Color.BLUE;
+        sunkenShipColor = Color.RED;
+        gridColor = Color.WHITE;
+        backgroundColor = Color.BLACK;
+        placementAimColor = Color.GREEN;
+        bombAimColor = Color.YELLOW;
         
         shipCoordinates = new int[numberOfShips][2];
     }

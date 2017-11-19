@@ -28,13 +28,13 @@ public class ClientDeluxe{
             Player1 p1 = new Player1(playerNumber, s, in, out, fieldSize);
             out.writeObject(s);
             while(true){
-                p1.fuckingGoTime();
+                p1.goTime();
             }
         }
         if (playerNumber == 2) {
             Player2 p2 = new Player2(playerNumber, s, in, out, fieldSize);
             while(true){
-                p2.fuckingGoTime();
+                p2.goTime();
             }
         }
     }
