@@ -49,10 +49,10 @@ public class SessionDeluxe implements Serializable{
         // Visual settings (bgc, fsc and ssc must be different)
         floatingShipColor = Color.GREEN;
         sunkenShipColor = Color.RED;
-        gridColor = Color.CYAN;
+        gridColor = Color.GREEN;
         backgroundColor = Color.BLACK;
-        placementAimColor = Color.ORANGE;
-        bombAimColor = Color.ORANGE;
+        placementAimColor = Color.GREEN;
+        bombAimColor = Color.GREEN;
         
         shipCoordinates = new int[numberOfShips*3][2];
     }
@@ -81,7 +81,6 @@ public class SessionDeluxe implements Serializable{
         shipCoordinates[shipCounter][0] = x;
         shipCoordinates[shipCounter][1] = y;
         shipCounter++;
-        System.out.println(shipCounter);
     }
     
     public int[][] getShipCoordinates(){

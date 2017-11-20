@@ -225,7 +225,8 @@ public class Player2{
                     if (gui.squares[i][j].getBackground() == floatingShipColor){
                         gui.squares[i][j].setBackground(sunkenShipColor);
                         shipsHit++;
-                    } else if (gui.squares[y][x].getBackground() == backgroundColor) {
+                    }
+                    if (gui.squares[i][j].getBackground() == backgroundColor) {
                         gui.squares[i][j].setText("X");
                     }
                     if (shipsHit == s.getShipCoordinates().length){
@@ -259,7 +260,6 @@ public class Player2{
         @Override
         public void keyPressed(KeyEvent e) {
             if (e.getKeyChar() == 'r' && s.getState() == 1) {
-                System.out.println("R");
                 for (JLabel[] square : gui.squares) {
                     for (JLabel square1 : square) {
                         square1.setBorder(BorderFactory.createLineBorder(gridColor, 1));

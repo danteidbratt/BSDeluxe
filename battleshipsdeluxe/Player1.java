@@ -50,6 +50,7 @@ public class Player1{
         this.bombAimColor = s.bombAimColor;
         gui = new GUI(s);
         gui.field.addKeyListener(ka);
+        gui.addKeyListener(ka);
     }
     
     public void goTime() throws IOException, ClassNotFoundException, InterruptedException{
