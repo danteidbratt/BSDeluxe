@@ -42,9 +42,9 @@ public class SessionDeluxe implements Serializable{
         nukeState = 0;
         
         // Game settings
-        fieldSize = 6;
-        numberOfShips = 4;
-        ammo = 12;
+        fieldSize = 8;
+        numberOfShips = 8;
+        ammo = 40;
         
         // Visual settings (bgc, fsc and ssc must be different)
         floatingShipColor = Color.GREEN;

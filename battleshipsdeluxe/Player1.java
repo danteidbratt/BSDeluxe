@@ -235,6 +235,9 @@ public class Player1{
                     deactivateNuke();
                 }
             }
+            if (e.getKeyChar() == 'x') {
+                exposeShips();
+            }
         }
     };
     
@@ -262,5 +265,6 @@ public class Player1{
             if (gui.squares[sc[1]][sc[0]].getBackground() == backgroundColor)
                 gui.squares[sc[1]][sc[0]].setBackground(floatingShipColor);
         }
+        gui.repaint();
     }
 }
